@@ -1,19 +1,26 @@
-import { SSTConfig } from "sst";
-import { NextjsSite } from "sst/constructs";
-
-export default {
-  config(_input) {
+// sst.config.ts
+const config = {
+  config(_input: any) {
+    // Dynamically import SSTConfig type if needed:
+    // const { SSTConfig } = await import("sst");
     return {
       name: "project-management",
       region: "us-east-1",
     };
   },
-  stacks(app) {
-    app.stack(function Site({ stack }) {
-      const site = new NextjsSite(stack, "site",{
-        environment:{
-          DATABASE_URL:process.env.DATABASE_URL
-        }
+
+  stacks(app: any) {
+    app.stack(async ({ stack }: any) => {
+      // Dynamic import of NextjsSite construct
+      const { NextjsSite } = await import("sst/constructs");
+
+      const site = new NextjsSite(stack, "site", {
+        path: ".",  
+        environment: {
+          DATABASE_URL: process.env.DATABASE_URL!,
+          SUPABASE_URL: process.env.SUPABASE_URL!,
+          SUPABASE_KEY: process.env.SUPABASE_KEY!,
+        },
       });
 
       stack.addOutputs({
@@ -21,4 +28,6 @@ export default {
       });
     });
   },
-} satisfies SSTConfig;
+};
+
+export default config;
