@@ -1,25 +1,18 @@
-// sst.config.ts
-const config = {
-  config(_input: any) {
-    // Dynamically import SSTConfig type if needed:
-    // const { SSTConfig } = await import("sst");
+import { type SSTConfig } from "sst";
+import { NextjsSite } from "sst/constructs";
+
+export default {
+  config(_input) {
     return {
-      name: "project-management",
+      name: "t3-sst",
       region: "us-east-1",
     };
   },
-
-  stacks(app: any) {
-    app.stack(async ({ stack }: any) => {
-      // Dynamic import of NextjsSite construct
-      const { NextjsSite } = await import("sst/constructs");
-
+  stacks(app) {
+    app.stack(function Site({ stack }) {
       const site = new NextjsSite(stack, "site", {
-        path: ".",  
         environment: {
           DATABASE_URL: process.env.DATABASE_URL!,
-          SUPABASE_URL: process.env.SUPABASE_URL!,
-          SUPABASE_KEY: process.env.SUPABASE_KEY!,
         },
       });
 
@@ -28,6 +21,4 @@ const config = {
       });
     });
   },
-};
-
-export default config;
+} satisfies SSTConfig;
